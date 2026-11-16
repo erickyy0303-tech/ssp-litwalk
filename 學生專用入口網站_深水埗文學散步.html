@@ -30,7 +30,7 @@
 <main class="max-w-4xl mx-auto px-4 mt-5 space-y-5">
 
   <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
-    <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] mb-3">1️⃣ 先選你的「班別」與「姓名」，即時查看專屬路線與地圖</h2>
+    <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] mb-3">1️⃣ 先選你的「班別」與「學號及姓名」，即時查看專屬路線與地圖</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <label class="block text-xs font-bold text-stone-600 mb-1">你的班別</label>
@@ -42,7 +42,7 @@
         </select>
       </div>
       <div>
-        <label class="block text-xs font-bold text-stone-600 mb-1">你的姓名</label>
+        <label class="block text-xs font-bold text-stone-600 mb-1">你的學號及姓名</label>
         <select id="stuName" onchange="updateStudentPortal()" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-[#FAF6EE]"></select>
       </div>
     </div>
@@ -127,13 +127,13 @@ function populateStuNames() {
   const sel = document.getElementById('stuName');
   if (!sel) return;
   const list = STU_ROSTER.filter(s => s.c === cls).sort((a,b) => Number(a.n) - Number(b.n));
-  sel.innerHTML = list.map(s => `<option value="${s.n}" data-group="${s.g}" data-tw="${s.tw}">${s.nm}（${s.n}號）</option>`).join('');
+  sel.innerHTML = list.map(s => `<option value="${s.n}" data-group="${s.g}" data-tw="${s.tw}">${s.n}號 — ${s.nm}</option>`).join('');
   populateStuNames();
 }
 
 function updateStudentPortal() {
   const cls = document.getElementById('stuClass').value;
-  const grp = document.getElementById('stuGroup').value;
+  const nameSel = document.getElementById('stuName'); const opt = nameSel?.options[nameSel.selectedIndex]; const gRaw = opt?.dataset?.group || '第1組'; const grp = gRaw.replace(/[^0-9]/g, '') || '1';
   const sched = (cls === '3A' || cls === '3C')
     ? `<strong>${cls} 班三日行程：</strong>星期三（08:00–12:30）深水埗實地考察 ➔ 星期四（09:00–10:30）回校寫景物描寫與對比圖集 ➔ 星期五（09:00–10:30）完成 600 字作文及製作 Story Book 繪本！`
     : `<strong>${cls} 班三日行程：</strong>星期三（09:00–10:30）在校課前預習與搜集數據 ➔ 星期四（08:00–12:30）深水埗實地考察 ➔ 星期五（09:00–10:30）完成比較生圖、寫作大綱與作文！`;
