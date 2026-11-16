@@ -57,7 +57,7 @@
         <h3 class="serif text-base font-bold text-[#244D3B] mb-1">📱 程式一：深水埗戶外實地考察程式</h3>
         <p class="text-xs text-stone-600 mb-3">在深水埗街頭散步 2 小時使用：內含五感＋人物、天空、地面、建築觀察、語音朗讀與尋寶拍照／畫板。</p>
       </div>
-      <a href="./outdoor.html" target="_blank" rel="noopener" class="block text-center bg-[#244D3B] hover:bg-emerald-900 text-white text-sm font-bold py-2.5 rounded-xl">打開程式一（戶外考察）</a>
+      <a href="./程式一_深水埗戶外實地考察程式.html" target="_blank" rel="noopener" class="block text-center bg-[#244D3B] hover:bg-emerald-900 text-white text-sm font-bold py-2.5 rounded-xl">打開程式一（戶外考察）</a>
     </div>
     <div class="bg-white rounded-2xl border-2 border-indigo-700 p-4 shadow-sm flex flex-col justify-between">
       <div>
@@ -65,7 +65,7 @@
         <h3 class="serif text-base font-bold text-indigo-900 mb-1">🎨 程式二：課堂預習、AI 生圖及寫作程式</h3>
         <p class="text-xs text-stone-600 mb-3">星期三至五在課室使用：含地景與社會狀況思考、3 個立意＋自由發揮、AI 寫作框架、作文紙 OCR 及 Story Book。</p>
       </div>
-      <a href="./classroom.html" target="_blank" rel="noopener" class="block text-center bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-bold py-2.5 rounded-xl">打開程式二（課堂寫作）</a>
+      <a href="./程式二_深水埗課堂預習生圖及寫作程式.html" target="_blank" rel="noopener" class="block text-center bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-bold py-2.5 rounded-xl">打開程式二（課堂寫作）</a>
     </div>
   </section>
 
@@ -269,12 +269,12 @@
       <div class="border border-emerald-200 bg-emerald-50/40 rounded-xl p-4">
         <div class="font-bold text-[#244D3B] text-base mb-1">📱 程式一：深水埗戶外實地考察程式</div>
         <p class="text-sm text-stone-600 mb-3">含最新 8 組路線與 Google Maps 完整路線連結，每站新增「五感＋人物、天空（對比天水圍）、地面、建築與社會狀況」觀察。</p>
-        <a href="./outdoor.html" target="_blank" rel="noopener" class="inline-block bg-[#244D3B] text-white text-xs px-3 py-2 rounded-lg font-bold">直接開啟程式一（戶外考察網頁）</a>
+        <a href="./程式一_深水埗戶外實地考察程式.html" target="_blank" rel="noopener" class="inline-block bg-[#244D3B] text-white text-xs px-3 py-2 rounded-lg font-bold">直接開啟程式一（戶外考察網頁）</a>
       </div>
       <div class="border border-indigo-200 bg-indigo-50/40 rounded-xl p-4">
         <div class="font-bold text-indigo-900 text-base mb-1">🎨 程式二：課堂預習、AI 生圖及三層寫作程式</div>
         <p class="text-sm text-stone-600 mb-3">含地景與社區關係取材反思、3 個預設立意＋自由發揮、AI 依既有資料提供可選寫作框架、作文紙 OCR 及 Story Book。</p>
-        <a href="./classroom.html" target="_blank" rel="noopener" class="inline-block bg-indigo-700 text-white text-xs px-3 py-2 rounded-lg font-bold">直接開啟程式二（課堂寫作網頁）</a>
+        <a href="./程式二_深水埗課堂預習生圖及寫作程式.html" target="_blank" rel="noopener" class="inline-block bg-indigo-700 text-white text-xs px-3 py-2 rounded-lg font-bold">直接開啟程式二（課堂寫作網頁）</a>
       </div>
       <div class="border border-stone-200 rounded-xl p-4">
         <div class="font-bold text-stone-800 text-base mb-1">⚙️ Google Apps Script 雲端橋接程式（v3）</div>
@@ -409,7 +409,7 @@ function populateStuNames() {
   if (!sel) return;
   const list = STU_ROSTER.filter(s => s.c === cls).sort((a,b) => Number(a.n) - Number(b.n));
   sel.innerHTML = list.map(s => `<option value="${s.n}" data-group="${s.g}" data-tw="${s.tw}">${s.n}號 — ${s.nm}</option>`).join('');
-  populateStuNames();
+  updateStudentPortal();
 }
 
 function updateStudentPortal() {
@@ -743,5 +743,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+<script>document.addEventListener('DOMContentLoaded', () => { if(typeof populateStuNames==='function') populateStuNames(); });</script>
 </body>
 </html>

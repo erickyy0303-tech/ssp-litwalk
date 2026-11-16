@@ -128,7 +128,7 @@ function populateStuNames() {
   if (!sel) return;
   const list = STU_ROSTER.filter(s => s.c === cls).sort((a,b) => Number(a.n) - Number(b.n));
   sel.innerHTML = list.map(s => `<option value="${s.n}" data-group="${s.g}" data-tw="${s.tw}">${s.n}號 — ${s.nm}</option>`).join('');
-  populateStuNames();
+  updateStudentPortal();
 }
 
 function updateStudentPortal() {
@@ -195,5 +195,6 @@ function stopSpeak() {
 
 window.onload = updateStudentPortal;
 </script>
+<script>document.addEventListener('DOMContentLoaded', () => { if(typeof populateStuNames==='function') populateStuNames(); });</script>
 </body>
 </html>
