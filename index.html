@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>學生專用入口網站｜深水埗文學散步（中三級）</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  body { font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif; background: #FAF6EE; color: #2C241E; }
+  .serif { font-family: 'Noto Serif TC', Georgia, serif; }
+</style>
+</head>
+<body class="min-h-screen pb-12">
+
+<header class="bg-[#244D3B] text-white sticky top-0 z-30 shadow-md">
+  <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+    <div>
+      <h1 class="serif text-lg sm:text-xl font-bold m-0">🎒 深水埗文學散步｜學生專用網站</h1>
+      <p class="text-xs text-emerald-100 m-0">賽馬會萬鈞毅智書院｜中三級（3A、3B、3C、3D）</p>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" onclick="speakGuide()" class="text-xs bg-emerald-700 hover:bg-emerald-600 px-3 py-1.5 rounded-lg">🔊 聽取指引</button>
+      <button type="button" onclick="stopSpeak()" class="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg">⏹️ 停止朗讀</button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-4 mt-5 space-y-5">
+
+  <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
+    <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] mb-3">1️⃣ 先選你的「班別」與「組別」，即時查看專屬路線與地圖</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div>
+        <label class="block text-xs font-bold text-stone-600 mb-1">你的班別</label>
+        <select id="stuClass" onchange="updateStudentPortal()" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-[#FAF6EE]">
+          <option value="3A">中三 A（3A）｜星期三考察 ➔ 星期四生圖 ➔ 星期五作文＋Story Book</option>
+          <option value="3B">中三 B（3B）｜星期三課前預習 ➔ 星期四考察 ➔ 星期五比較生圖＋大綱</option>
+          <option value="3C">中三 C（3C）｜星期三考察 ➔ 星期四生圖 ➔ 星期五作文＋Story Book</option>
+          <option value="3D">中三 D（3D）｜星期三課前預習 ➔ 星期四考察 ➔ 星期五比較生圖＋大綱</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-stone-600 mb-1">你的組別（第 1–8 組）</label>
+        <select id="stuGroup" onchange="updateStudentPortal()" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-[#FAF6EE]">
+          <option value="1">第 1 組（警署後麗安邨荔枝角道起點及終點）</option>
+          <option value="2">第 2 組（警署後麗安邨荔枝角道起點及終點）</option>
+          <option value="3">第 3 組（警署後麗安邨荔枝角道起點及終點）</option>
+          <option value="4">第 4 組（警署後麗安邨荔枝角道起點及終點）</option>
+          <option value="5">第 5 組（警署後麗安邨荔枝角道起點及終點）</option>
+          <option value="6">第 6 組（警署後麗安邨荔枝角道起點及終點）</option>
+          <option value="7">第 7 組（青山道近美荷樓起點）</option>
+          <option value="8">第 8 組（青山道近美荷樓起點）</option>
+        </select>
+      </div>
+    </div>
+    <div id="classScheduleBox" class="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-950"></div>
+  </section>
+
+  <section class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="bg-white rounded-2xl border-2 border-[#244D3B] p-4 shadow-sm flex flex-col justify-between">
+      <div>
+        <span class="inline-block text-xs font-bold bg-[#244D3B] text-white px-2.5 py-0.5 rounded-full mb-2">戶外實地考察用</span>
+        <h3 class="serif text-base font-bold text-[#244D3B] mb-1">📱 程式一：深水埗戶外實地考察程式</h3>
+        <p class="text-xs text-stone-600 mb-3">在深水埗街頭散步 2 小時使用：內含五感＋人物、天空、地面、建築觀察、語音朗讀與尋寶拍照／畫板。</p>
+      </div>
+      <a href="./outdoor.html" target="_blank" rel="noopener" class="block text-center bg-[#244D3B] hover:bg-emerald-900 text-white text-sm font-bold py-2.5 rounded-xl">打開程式一（戶外考察）</a>
+    </div>
+    <div class="bg-white rounded-2xl border-2 border-indigo-700 p-4 shadow-sm flex flex-col justify-between">
+      <div>
+        <span class="inline-block text-xs font-bold bg-indigo-700 text-white px-2.5 py-0.5 rounded-full mb-2">在校課堂＋寫作用</span>
+        <h3 class="serif text-base font-bold text-indigo-900 mb-1">🎨 程式二：課堂預習、AI 生圖及寫作程式</h3>
+        <p class="text-xs text-stone-600 mb-3">星期三至五在課室使用：含地景與社會狀況思考、3 個立意＋自由發揮、AI 寫作框架、作文紙 OCR 及 Story Book。</p>
+      </div>
+      <a href="./classroom.html" target="_blank" rel="noopener" class="block text-center bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-bold py-2.5 rounded-xl">打開程式二（課堂寫作）</a>
+    </div>
+  </section>
+
+  <!-- Interactive Map & Group Route -->
+  <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] m-0">2️⃣ 我這組的 Google Maps 路線地圖與尋寶站點</h2>
+      <div class="flex gap-2 flex-wrap">
+        <a id="myFullMapLink" href="#" target="_blank" rel="noopener" class="text-xs bg-[#244D3B] hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg font-bold">🗺️ 開啟本組完整 Google Maps 路線</a>
+        <a id="myWorksheetLink" href="#" target="_blank" rel="noopener" class="text-xs bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg font-bold">📄 打開我這組的工作紙</a>
+      </div>
+    </div>
+    <div id="studentMapBox" style="height: 290px;" class="w-full rounded-xl border border-stone-300 mb-3 z-10"></div>
+    <div id="myRouteSteps" class="space-y-2 text-sm"></div>
+  </section>
+
+  <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
+    <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] mb-3">3️⃣ 觀察提醒（五感 ＋ 人物、天空、地面、建築）與紙本下載</h2>
+    <div class="bg-[#FAF6EE] border border-stone-200 rounded-xl p-3 text-xs text-stone-700 mb-3 leading-relaxed">
+      <strong>👀 每站必做觀察：</strong>除了五感體驗，請特別抬頭望向<strong>天空</strong>（天台魚骨天線、招牌與天水圍開揚天空有何不同？）、低頭看<strong>地面</strong>（排檔、磚地、騎樓底）、留意<strong>建築</strong>與<strong>人物神色</strong>，思考這些景象反映了深水埗怎樣的社會狀況！
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="https://docs.google.com/document/d/1Cg5O8e84LH85kOVue6L1Z7LR9ajWQfuYhiMfgm8giRE/edit" target="_blank" rel="noopener" class="text-xs bg-stone-100 hover:bg-emerald-100 border border-stone-300 px-3 py-2 rounded-lg font-bold">📙 下載《學生指引》</a>
+      <a href="https://drive.google.com/file/d/1PFXYXBN8UJELgjn4Iv_pBffGJvWxGy6Z/view?usp=drivesdk" target="_blank" rel="noopener" class="text-xs bg-stone-100 hover:bg-emerald-100 border border-stone-300 px-3 py-2 rounded-lg font-bold">🖨️ 下載《紙本手冊 PDF（含600字作文紙）》</a>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const STATIONS_INFO = {
+  START_LA: { name: '起點：深水埗警署後麗安邨荔枝角道', lat: 22.33155, lng: 114.15716 },
+  START_MHH: { name: '起點：青山道近美荷樓', lat: 22.33379, lng: 114.16350 },
+  S04: { name: '經大埔道經過嘉頓山及美荷樓', lat: 22.33379, lng: 114.16273, hunt: '外圍遠望橙白美荷樓與紅白嘉頓鐘樓；對比天空與舊樓天線', map: 'https://www.google.com/maps/search/?api=1&query=美荷樓&query_place_id=ChIJ7wjSFksHBDQR5LdnLCXRtgc' },
+  S06: { name: '黃金電腦商場', lat: 22.33172, lng: 114.16231, hunt: '觀察舊式金字招牌與現代電腦廣告、商場地面人流', map: 'https://www.google.com/maps/search/?api=1&query=黃金電腦商場&query_place_id=ChIJn2Nqr7QABDQR-__8ruLtig4' },
+  S07: { name: '福榮街玩具街', lat: 22.33114, lng: 114.16390, hunt: '觀察門楣懸掛玩具、櫥窗模型與親子神色', map: 'https://www.google.com/maps/search/?api=1&query=深水埗玩具街&query_place_id=ChIJg6CPxrQABDQRV5M-zx_nbog' },
+  S08: { name: '公和荳品廠', lat: 22.33108, lng: 114.16347, hunt: '品嚐豆腐花／豆漿，觀察店員動作與街坊搭枱互動', map: 'https://www.google.com/maps/search/?api=1&query=公和荳品廠&query_place_id=ChIJlSRIwLQABDQRT_B6YwxZJ_Q' },
+  S05: { name: '鴨寮街', lat: 22.33030, lng: 114.16150, hunt: '尋寶：找路邊招貼 ＋ 極便宜／未見過貨品；觀察地面排檔與天空電線', map: 'https://www.google.com/maps/search/?api=1&query=鴨寮街&query_place_id=ChIJj9hkXLQABDQRmGoaHsRuC2k' },
+  S03: { name: '三太子廟（汝州街）', lat: 22.32935, lng: 114.16246, hunt: '尋寶：找出廟門「功德生民則祀之」對聯；對比廟內外建築與氣氛', map: 'https://www.google.com/maps/search/?api=1&query=深水埗三太子及北帝廟&query_place_id=ChIJF_CtfLQABDQR1CWejYLBEUA' },
+  S02: { name: '深水埗警署及周邊', lat: 22.33019, lng: 114.15923, hunt: '尋寶：觀察 1925 年騎樓柱廊 ＋ 舊式「T字型」街牌', map: 'https://www.google.com/maps/search/?api=1&query=深水埗警署&query_place_id=ChIJDzVCQfgBBDQRziXT_qo_92Q' },
+  S01: { name: '西九龍中心', lat: 22.33102, lng: 114.15982, hunt: '仰望室內過山車軌道，從窗外望舊樓天台魚骨天線對比天水圍天空', map: 'https://www.google.com/maps/search/?api=1&query=西九龍中心&query_place_id=ChIJw4LLE7MABDQR4MMha8oMpPc' }
+};
+
+const GROUP_CONFIG = {
+  '1': { startKey: 'START_LA', endReturn: true, doc: 'https://docs.google.com/document/d/1QFkVCOdAmJUMz_qUUJIahViFBnpAduoNJhqhZQ2wM_A/edit', order: ['S03','S05','S08','S07','S04','S06','S01','S02'], mapUrl: 'https://www.google.com/maps/dir/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E6%B1%9D%E5%B7%9E%E8%A1%97196%E8%99%9F%E6%B1%9D%E5%B7%9E%E8%A1%97194%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E4%B8%89%E5%A4%AA%E5%AD%90%E5%AE%AE%E5%8F%8A%E5%8C%97%E5%B8%9D%E5%AE%AE/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E9%B4%A8%E5%AF%AE%E8%A1%97/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%8C%97%E6%B2%B3%E8%A1%97118%E8%99%9F%E8%99%9F%E5%9C%B0%E4%B8%8B%E5%85%AC%E5%92%8C%E8%8D%B3%E5%93%81%E5%BB%A0/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%A6%8F%E6%A6%AE%E8%A1%97%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%8E%A9%E5%85%B7%E8%A1%97/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%98%89%E9%A0%93%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E5%85%83%E6%B4%B2%E7%A6%8F%E8%8F%AF%E8%A1%97%E9%BB%83%E9%87%91%E9%9B%BB%E8%85%A6%E5%95%86%E5%A0%B4/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37K%E8%99%9F%E8%A5%BF%E4%B9%9D%E9%BE%8D%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37A%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%AD%A6%E7%BD%B2/data=!4m53!4m52!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!1m5!1m1!19sChIJF_CtfLQABDQR1CWejYLBEUA!2m2!1d114.1624628!2d22.329354499999997!1m2!1m1!19sIi4qLAoUChIJj9hkXLQABDQRmGoaHsRuC2kSFAoSCQuqX6G0AAQ0EU5_6bnhEYbj!1m5!1m1!19sChIJlSRIwLQABDQRT_B6YwxZJ_Q!2m2!1d114.16347379999999!2d22.33108!1m5!1m1!19sChIJg6CPxrQABDQRV5M-zx_nbog!2m2!1d114.1639015!2d22.3311375!1m5!1m1!19sChIJy1zWaUsHBDQRP4VIM3rBdis!2m2!1d114.16272989999999!2d22.333793399999998!1m5!1m1!19sChIJn2Nqr7QABDQR-__8ruLtig4!2m2!1d114.16230859999999!2d22.3317241!1m5!1m1!19sChIJw4LLE7MABDQR4MMha8oMpPc!2m2!1d114.1598202!2d22.331017499999998!1m5!1m1!19sChIJDzVCQfgBBDQRziXT_qo_92Q!2m2!1d114.159228!2d22.3301944!3e2' },
+  '2': { startKey: 'START_LA', endReturn: true, doc: 'https://docs.google.com/document/d/1zkPYja2aOjP28NEzU7bRV5q_Xq7gKh7GrSVbOXf0KN8/edit', order: ['S05','S03','S07','S04','S06','S02','S01'], mapUrl: 'https://www.google.com/maps/dir/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E9%B4%A8%E5%AF%AE%E8%A1%97/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E6%B1%9D%E5%B7%9E%E8%A1%97196%E8%99%9F%E6%B1%9D%E5%B7%9E%E8%A1%97194%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E4%B8%89%E5%A4%AA%E5%AD%90%E5%AE%AE%E5%8F%8A%E5%8C%97%E5%B8%9D%E5%AE%AE/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%A6%8F%E6%A6%AE%E8%A1%97%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%8E%A9%E5%85%B7%E8%A1%97/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%98%89%E9%A0%93%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E5%85%83%E6%B4%B2%E7%A6%8F%E8%8F%AF%E8%A1%97%E9%BB%83%E9%87%91%E9%9B%BB%E8%85%A6%E5%95%86%E5%A0%B4/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37A%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%AD%A6%E7%BD%B2/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37K%E8%99%9F%E8%A5%BF%E4%B9%9D%E9%BE%8D%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/data=!4m53!4m52!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!1m2!1m1!19sIi4qLAoUChIJj9hkXLQABDQRmGoaHsRuC2kSFAoSCQuqX6G0AAQ0EU5_6bnhEYbj!1m5!1m1!19sChIJF_CtfLQABDQR1CWejYLBEUA!2m2!1d114.1624628!2d22.329354499999997!1m5!1m1!19sChIJg6CPxrQABDQRV5M-zx_nbog!2m2!1d114.1639015!2d22.3311375!1m5!1m1!19sChIJy1zWaUsHBDQRP4VIM3rBdis!2m2!1d114.16272989999999!2d22.333793399999998!1m5!1m1!19sChIJn2Nqr7QABDQR-__8ruLtig4!2m2!1d114.16230859999999!2d22.3317241!1m5!1m1!19sChIJDzVCQfgBBDQRziXT_qo_92Q!2m2!1d114.159228!2d22.3301944!1m5!1m1!19sChIJw4LLE7MABDQR4MMha8oMpPc!2m2!1d114.1598202!2d22.331017499999998!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!3e2' },
+  '3': { startKey: 'START_LA', endReturn: true, doc: 'https://docs.google.com/document/d/1KMbpFetVUEb7VfuKWXoxdvUNsPzhxH__zcuVYP1K5lo/edit', order: ['S02','S01','S06','S04','S08','S07','S05','S03'], mapUrl: 'https://www.google.com/maps/dir/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37A%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%AD%A6%E7%BD%B2/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37K%E8%99%9F%E8%A5%BF%E4%B9%9D%E9%BE%8D%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E5%85%83%E6%B4%B2%E7%A6%8F%E8%8F%AF%E8%A1%97%E9%BB%83%E9%87%91%E9%9B%BB%E8%85%A6%E5%95%86%E5%A0%B4/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%98%89%E9%A0%93%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%8C%97%E6%B2%B3%E8%A1%97118%E8%99%9F%E8%99%9F%E5%9C%B0%E4%B8%8B%E5%85%AC%E5%92%8C%E8%8D%B3%E5%93%81%E5%BB%A0/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%A6%8F%E6%A6%AE%E8%A1%97%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%8E%A9%E5%85%B7%E8%A1%97/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E9%B4%A8%E5%AF%AE%E8%A1%97/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E6%B1%9D%E5%B7%9E%E8%A1%97196%E8%99%9F%E6%B1%9D%E5%B7%9E%E8%A1%97194%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E4%B8%89%E5%A4%AA%E5%AD%90%E5%AE%AE%E5%8F%8A%E5%8C%97%E5%B8%9D%E5%AE%AE/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/data=!4m59!4m58!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!1m5!1m1!19sChIJDzVCQfgBBDQRziXT_qo_92Q!2m2!1d114.159228!2d22.3301944!1m5!1m1!19sChIJw4LLE7MABDQR4MMha8oMpPc!2m2!1d114.1598202!2d22.331017499999998!1m5!1m1!19sChIJn2Nqr7QABDQR-__8ruLtig4!2m2!1d114.16230859999999!2d22.3317241!1m5!1m1!19sChIJy1zWaUsHBDQRP4VIM3rBdis!2m2!1d114.16272989999999!2d22.333793399999998!1m5!1m1!19sChIJlSRIwLQABDQRT_B6YwxZJ_Q!2m2!1d114.16347379999999!2d22.33108!1m5!1m1!19sChIJg6CPxrQABDQRV5M-zx_nbog!2m2!1d114.1639015!2d22.3311375!1m2!1m1!19sIi4qLAoUChIJj9hkXLQABDQRmGoaHsRuC2kSFAoSCQuqX6G0AAQ0EU5_6bnhEYbj!1m5!1m1!19sChIJF_CtfLQABDQR1CWejYLBEUA!2m2!1d114.1624628!2d22.329354499999997!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!3e2' },
+  '4': { startKey: 'START_LA', endReturn: true, doc: 'https://docs.google.com/document/d/1HDWUVUIwIDLeH6P6Hw1FaYpD7p5Tt3AmLIaHWwYTYYY/edit', order: ['S02','S05','S03','S08','S07','S04','S06','S01'], mapUrl: 'https://www.google.com/maps/dir/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37A%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%AD%A6%E7%BD%B2/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E9%B4%A8%E5%AF%AE%E8%A1%97/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E6%B1%9D%E5%B7%9E%E8%A1%97196%E8%99%9F%E6%B1%9D%E5%B7%9E%E8%A1%97194%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E4%B8%89%E5%A4%AA%E5%AD%90%E5%AE%AE%E5%8F%8A%E5%8C%97%E5%B8%9D%E5%AE%AE/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%8C%97%E6%B2%B3%E8%A1%97118%E8%99%9F%E8%99%9F%E5%9C%B0%E4%B8%8B%E5%85%AC%E5%92%8C%E8%8D%B3%E5%93%81%E5%BB%A0/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%A6%8F%E6%A6%AE%E8%A1%97%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%8E%A9%E5%85%B7%E8%A1%97/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%98%89%E9%A0%93%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E5%85%83%E6%B4%B2%E7%A6%8F%E8%8F%AF%E8%A1%97%E9%BB%83%E9%87%91%E9%9B%BB%E8%85%A6%E5%95%86%E5%A0%B4/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37K%E8%99%9F%E8%A5%BF%E4%B9%9D%E9%BE%8D%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/data=!4m59!4m58!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!1m5!1m1!19sChIJDzVCQfgBBDQRziXT_qo_92Q!2m2!1d114.159228!2d22.3301944!1m2!1m1!19sIi4qLAoUChIJj9hkXLQABDQRmGoaHsRuC2kSFAoSCQuqX6G0AAQ0EU5_6bnhEYbj!1m5!1m1!19sChIJF_CtfLQABDQR1CWejYLBEUA!2m2!1d114.1624628!2d22.329354499999997!1m5!1m1!19sChIJlSRIwLQABDQRT_B6YwxZJ_Q!2m2!1d114.16347379999999!2d22.33108!1m5!1m1!19sChIJg6CPxrQABDQRV5M-zx_nbog!2m2!1d114.1639015!2d22.3311375!1m5!1m1!19sChIJy1zWaUsHBDQRP4VIM3rBdis!2m2!1d114.16272989999999!2d22.333793399999998!1m5!1m1!19sChIJn2Nqr7QABDQR-__8ruLtig4!2m2!1d114.16230859999999!2d22.3317241!1m5!1m1!19sChIJw4LLE7MABDQR4MMha8oMpPc!2m2!1d114.1598202!2d22.331017499999998!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!3e2' },
+  '5': { startKey: 'START_LA', endReturn: true, doc: 'https://docs.google.com/document/d/1fypkKZtERPlmxTTkMMVDxcpb_Tna1cRMi-FwjOOJqTs/edit', order: ['S01','S06','S04','S08','S07','S05','S03','S02'], mapUrl: 'https://www.google.com/maps/dir/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37K%E8%99%9F%E8%A5%BF%E4%B9%9D%E9%BE%8D%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E5%85%83%E6%B4%B2%E7%A6%8F%E8%8F%AF%E8%A1%97%E9%BB%83%E9%87%91%E9%9B%BB%E8%85%A6%E5%95%86%E5%A0%B4/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%98%89%E9%A0%93%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%8C%97%E6%B2%B3%E8%A1%97118%E8%99%9F%E8%99%9F%E5%9C%B0%E4%B8%8B%E5%85%AC%E5%92%8C%E8%8D%B3%E5%93%81%E5%BB%A0/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%A6%8F%E6%A6%AE%E8%A1%97%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%8E%A9%E5%85%B7%E8%A1%97/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E9%B4%A8%E5%AF%AE%E8%A1%97/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E6%B1%9D%E5%B7%9E%E8%A1%97196%E8%99%9F%E6%B1%9D%E5%B7%9E%E8%A1%97194%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E4%B8%89%E5%A4%AA%E5%AD%90%E5%AE%AE%E5%8F%8A%E5%8C%97%E5%B8%9D%E5%AE%AE/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37A%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%AD%A6%E7%BD%B2/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/data=!4m59!4m58!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!1m5!1m1!19sChIJw4LLE7MABDQR4MMha8oMpPc!2m2!1d114.1598202!2d22.331017499999998!1m5!1m1!19sChIJn2Nqr7QABDQR-__8ruLtig4!2m2!1d114.16230859999999!2d22.3317241!1m5!1m1!19sChIJy1zWaUsHBDQRP4VIM3rBdis!2m2!1d114.16272989999999!2d22.333793399999998!1m5!1m1!19sChIJlSRIwLQABDQRT_B6YwxZJ_Q!2m2!1d114.16347379999999!2d22.33108!1m5!1m1!19sChIJg6CPxrQABDQRV5M-zx_nbog!2m2!1d114.1639015!2d22.3311375!1m2!1m1!19sIi4qLAoUChIJj9hkXLQABDQRmGoaHsRuC2kSFAoSCQuqX6G0AAQ0EU5_6bnhEYbj!1m5!1m1!19sChIJF_CtfLQABDQR1CWejYLBEUA!2m2!1d114.1624628!2d22.329354499999997!1m5!1m1!19sChIJDzVCQfgBBDQRziXT_qo_92Q!2m2!1d114.159228!2d22.3301944!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!3e2' },
+  '6': { startKey: 'START_LA', endReturn: true, doc: 'https://docs.google.com/document/d/1Gi9Vjxcw1PXwRe4_vYfKPc9s205SupMeiRrsdYxDB-M/edit', order: ['S01','S05','S03','S08','S07','S04','S06','S02'], mapUrl: 'https://www.google.com/maps/dir/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37K%E8%99%9F%E8%A5%BF%E4%B9%9D%E9%BE%8D%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E9%B4%A8%E5%AF%AE%E8%A1%97/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E6%B1%9D%E5%B7%9E%E8%A1%97196%E8%99%9F%E6%B1%9D%E5%B7%9E%E8%A1%97194%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E4%B8%89%E5%A4%AA%E5%AD%90%E5%AE%AE%E5%8F%8A%E5%8C%97%E5%B8%9D%E5%AE%AE/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%8C%97%E6%B2%B3%E8%A1%97118%E8%99%9F%E8%99%9F%E5%9C%B0%E4%B8%8B%E5%85%AC%E5%92%8C%E8%8D%B3%E5%93%81%E5%BB%A0/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%A6%8F%E6%A6%AE%E8%A1%97%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%8E%A9%E5%85%B7%E8%A1%97/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%98%89%E9%A0%93%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E5%85%83%E6%B4%B2%E7%A6%8F%E8%8F%AF%E8%A1%97%E9%BB%83%E9%87%91%E9%9B%BB%E8%85%A6%E5%95%86%E5%A0%B4/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37A%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%AD%A6%E7%BD%B2/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%8D%94%E6%9E%9D%E8%A7%92%E9%81%93420%E8%99%9F%E9%BA%97%E5%AE%89%E9%82%A8/data=!4m59!4m58!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!1m5!1m1!19sChIJw4LLE7MABDQR4MMha8oMpPc!2m2!1d114.1598202!2d22.331017499999998!1m2!1m1!19sIi4qLAoUChIJj9hkXLQABDQRmGoaHsRuC2kSFAoSCQuqX6G0AAQ0EU5_6bnhEYbj!1m5!1m1!19sChIJF_CtfLQABDQR1CWejYLBEUA!2m2!1d114.1624628!2d22.329354499999997!1m5!1m1!19sChIJlSRIwLQABDQRT_B6YwxZJ_Q!2m2!1d114.16347379999999!2d22.33108!1m5!1m1!19sChIJg6CPxrQABDQRV5M-zx_nbog!2m2!1d114.1639015!2d22.3311375!1m5!1m1!19sChIJy1zWaUsHBDQRP4VIM3rBdis!2m2!1d114.16272989999999!2d22.333793399999998!1m5!1m1!19sChIJn2Nqr7QABDQR-__8ruLtig4!2m2!1d114.16230859999999!2d22.3317241!1m5!1m1!19sChIJDzVCQfgBBDQRziXT_qo_92Q!2m2!1d114.159228!2d22.3301944!1m5!1m1!19sChIJvaYyXz0BBDQR7woCMIO8Qsg!2m2!1d114.1571632!2d22.3315517!3e2' },
+  '7': { startKey: 'START_MHH', endReturn: false, doc: 'https://docs.google.com/document/d/1fvWi35vY7iJuMuFVLNXCbx-2cVrgbNMbw-ROpyhjKcI/edit', order: ['S08','S07','S04','S06','S01','S02','S03','S05'], mapUrl: 'https://www.google.com/maps/dir/%E9%A6%99%E6%B8%AF%E7%99%BD%E7%94%B0%E7%BE%8E%E8%8D%B7%E6%A8%93/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%8C%97%E6%B2%B3%E8%A1%97118%E8%99%9F%E8%99%9F%E5%9C%B0%E4%B8%8B%E5%85%AC%E5%92%8C%E8%8D%B3%E5%93%81%E5%BB%A0/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%A6%8F%E6%A6%AE%E8%A1%97%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%8E%A9%E5%85%B7%E8%A1%97/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%98%89%E9%A0%93%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E5%85%83%E6%B4%B2%E7%A6%8F%E8%8F%AF%E8%A1%97%E9%BB%83%E9%87%91%E9%9B%BB%E8%85%A6%E5%95%86%E5%A0%B4/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37K%E8%99%9F%E8%A5%BF%E4%B9%9D%E9%BE%8D%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37A%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%AD%A6%E7%BD%B2/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E6%B1%9D%E5%B7%9E%E8%A1%97196%E8%99%9F%E6%B1%9D%E5%B7%9E%E8%A1%97194%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E4%B8%89%E5%A4%AA%E5%AD%90%E5%AE%AE%E5%8F%8A%E5%8C%97%E5%B8%9D%E5%AE%AE/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E9%B4%A8%E5%AF%AE%E8%A1%97/data=!4m50!4m49!1m2!1m1!19sChIJ7wjSFksHBDQR5LdnLCXRtgc!1m5!1m1!19sChIJlSRIwLQABDQRT_B6YwxZJ_Q!2m2!1d114.16347379999999!2d22.33108!1m5!1m1!19sChIJg6CPxrQABDQRV5M-zx_nbog!2m2!1d114.1639015!2d22.3311375!1m5!1m1!19sChIJy1zWaUsHBDQRP4VIM3rBdis!2m2!1d114.16272989999999!2d22.333793399999998!1m5!1m1!19sChIJn2Nqr7QABDQR-__8ruLtig4!2m2!1d114.16230859999999!2d22.3317241!1m5!1m1!19sChIJw4LLE7MABDQR4MMha8oMpPc!2m2!1d114.1598202!2d22.331017499999998!1m5!1m1!19sChIJDzVCQfgBBDQRziXT_qo_92Q!2m2!1d114.159228!2d22.3301944!1m5!1m1!19sChIJF_CtfLQABDQR1CWejYLBEUA!2m2!1d114.1624628!2d22.329354499999997!1m2!1m1!19sIi4qLAoUChIJj9hkXLQABDQRmGoaHsRuC2kSFAoSCQuqX6G0AAQ0EU5_6bnhEYbj!3e2' },
+  '8': { startKey: 'START_MHH', endReturn: false, doc: 'https://docs.google.com/document/d/1OdrLo9VpJ4BU7qeFjmxd-F40mBIEL8TP6NjhgwFIpQY/edit', order: ['S07','S08','S06','S01','S02','S03','S05'], mapUrl: 'https://www.google.com/maps/dir/%E9%A6%99%E6%B8%AF%E7%99%BD%E7%94%B0%E7%BE%8E%E8%8D%B7%E6%A8%93/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%A6%8F%E6%A6%AE%E8%A1%97%E6%B7%B1%E6%B0%B4%E5%9F%97%E7%8E%A9%E5%85%B7%E8%A1%97/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E5%8C%97%E6%B2%B3%E8%A1%97118%E8%99%9F%E8%99%9F%E5%9C%B0%E4%B8%8B%E5%85%AC%E5%92%8C%E8%8D%B3%E5%93%81%E5%BB%A0/%E9%A6%99%E6%B8%AF%E5%85%83%E6%B4%B2%E7%A6%8F%E8%8F%AF%E8%A1%97%E9%BB%83%E9%87%91%E9%9B%BB%E8%85%A6%E5%95%86%E5%A0%B4/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37K%E8%99%9F%E8%A5%BF%E4%B9%9D%E9%BE%8D%E4%B8%AD%E5%BF%83/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97+Yen+Chow+St,+37A%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E8%AD%A6%E7%BD%B2/%E9%A6%99%E6%B8%AF%E6%B7%B1%E6%B0%B4%E5%9F%97%E6%B1%9D%E5%B7%9E%E8%A1%97196%E8%99%9F%E6%B1%9D%E5%B7%9E%E8%A1%97194%E8%99%9F%E6%B7%B1%E6%B0%B4%E5%9F%97%E4%B8%89%E5%A4%AA%E5%AD%90%E5%AE%AE%E5%8F%8A%E5%8C%97%E5%B8%9D%E5%AE%AE/%E9%A6%99%E6%B8%AF%E4%B9%9D%E9%BE%8D%E6%B7%B1%E6%B0%B4%E5%9F%97%E9%B4%A8%E5%AF%AE%E8%A1%97/data=!4m44!4m43!1m2!1m1!19sChIJ7wjSFksHBDQR5LdnLCXRtgc!1m5!1m1!19sChIJg6CPxrQABDQRV5M-zx_nbog!2m2!1d114.1639015!2d22.3311375!1m5!1m1!19sChIJlSRIwLQABDQRT_B6YwxZJ_Q!2m2!1d114.16347379999999!2d22.33108!1m5!1m1!19sChIJn2Nqr7QABDQR-__8ruLtig4!2m2!1d114.16230859999999!2d22.3317241!1m5!1m1!19sChIJw4LLE7MABDQR4MMha8oMpPc!2m2!1d114.1598202!2d22.331017499999998!1m5!1m1!19sChIJDzVCQfgBBDQRziXT_qo_92Q!2m2!1d114.159228!2d22.3301944!1m5!1m1!19sChIJF_CtfLQABDQR1CWejYLBEUA!2m2!1d114.1624628!2d22.329354499999997!1m2!1m1!19sIi4qLAoUChIJj9hkXLQABDQRmGoaHsRuC2kSFAoSCQuqX6G0AAQ0EU5_6bnhEYbj!3e2' }
+};
+
+let sMap = null, sLayerGroup = null;
+function updateStudentPortal() {
+  const cls = document.getElementById('stuClass').value;
+  const grp = document.getElementById('stuGroup').value;
+  const sched = (cls === '3A' || cls === '3C')
+    ? `<strong>${cls} 班三日行程：</strong>星期三（08:00–12:30）深水埗實地考察 ➔ 星期四（09:00–10:30）回校寫景物描寫與對比圖集 ➔ 星期五（09:00–10:30）完成 600 字作文及製作 Story Book 繪本！`
+    : `<strong>${cls} 班三日行程：</strong>星期三（09:00–10:30）在校課前預習與搜集數據 ➔ 星期四（08:00–12:30）深水埗實地考察 ➔ 星期五（09:00–10:30）完成比較生圖、寫作大綱與作文！`;
+  document.getElementById('classScheduleBox').innerHTML = sched;
+
+  const cfg = GROUP_CONFIG[grp];
+  document.getElementById('myWorksheetLink').href = cfg.doc;
+  document.getElementById('myFullMapLink').href = cfg.mapUrl;
+
+  if (typeof L !== 'undefined') {
+    if (!sMap) {
+      sMap = L.map('studentMapBox').setView([22.3312, 114.1615], 16);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Esri'
+      }).addTo(sMap);
+      sLayerGroup = L.layerGroup().addTo(sMap);
+    }
+    sLayerGroup.clearLayers();
+    const pts = [STATIONS_INFO[cfg.startKey], ...cfg.order.map(id => STATIONS_INFO[id])];
+    if (cfg.endReturn) pts.push(STATIONS_INFO[cfg.startKey]);
+    const latlngs = pts.map(p => [p.lat, p.lng]);
+    L.polyline(latlngs, { color: '#244D3B', weight: 4, opacity: 0.85 }).addTo(sLayerGroup);
+    pts.forEach((p, idx) => {
+      const label = idx === 0 ? '起' : (cfg.endReturn && idx === pts.length - 1 ? '終' : String(idx));
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="background:${idx===0?'#7A4E2D':'#244D3B'};color:#fff;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:11px;font-weight:bold;border:2px solid #fff;">${label}</div>`,
+        iconSize: [22, 22], iconAnchor: [11, 11]
+      });
+      L.marker([p.lat, p.lng], { icon }).bindPopup(`<strong>${label}. ${p.name}</strong>`).addTo(sLayerGroup);
+    });
+    sMap.fitBounds(latlngs, { padding: [20, 20] });
+  }
+
+  document.getElementById('myRouteSteps').innerHTML = cfg.order.map((sid, idx) => {
+    const st = STATIONS_INFO[sid];
+    return `
+      <div class="flex flex-wrap items-center justify-between gap-2 bg-[#FAF6EE] border border-stone-200 rounded-xl px-3 py-2">
+        <div>
+          <span class="inline-block w-6 h-6 text-center leading-6 text-xs font-bold bg-[#244D3B] text-white rounded-full mr-1.5">${idx + 1}</span>
+          <strong class="text-[#244D3B]">${st.name}</strong>
+          <div class="text-xs text-stone-600 ml-8">${st.hunt}</div>
+        </div>
+        <a href="${st.map}" target="_blank" rel="noopener" class="text-xs bg-white border border-stone-300 hover:bg-emerald-50 px-2.5 py-1 rounded-lg font-medium">📍 單站地圖</a>
+      </div>`;
+  }).join('');
+}
+
+function speakGuide() {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance('歡迎來到深水埗文學散步學生網站。請先選擇你的班別和組別，查看路線地圖、五感與人物天空地面建築的觀察任務。');
+  u.lang = 'zh-HK';
+  window.speechSynthesis.speak(u);
+}
+function stopSpeak() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+window.onload = updateStudentPortal;
+</script>
+</body>
+</html>
