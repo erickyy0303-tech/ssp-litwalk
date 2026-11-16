@@ -92,43 +92,6 @@
       <a href="https://drive.google.com/file/d/1PFXYXBN8UJELgjn4Iv_pBffGJvWxGy6Z/view?usp=drivesdk" target="_blank" rel="noopener" class="text-xs bg-stone-100 hover:bg-emerald-100 border border-stone-300 px-3 py-2 rounded-lg font-bold">🖨️ 下載《紙本手冊 PDF（含600字作文紙）》</a>
     </div>
   </section>
-
-
-  <section class="bg-white rounded-2xl border-2 border-[#244D3B] p-5 shadow-sm mt-5" id="liveMonitorSection">
-    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-      <div>
-        <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] m-0">📡 實時監測各站完成進度（每 10 秒自動更新）</h2>
-        <p class="text-xs text-stone-500 m-0">即時顯示每位學生已完成站數、總作答字數及異常預警（字數少於 15 字或尚未動筆將標示提醒）。</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <select id="monClassFilter" onchange="renderLiveMonitor()" class="border border-stone-300 rounded-lg px-2 py-1 text-xs bg-[#FAF6EE]">
-          <option value="ALL">全部班別</option><option value="3A">3A</option><option value="3B">3B</option><option value="3C">3C</option><option value="3D">3D</option>
-        </select>
-        <button type="button" onclick="fetchLiveMonitor(true)" class="text-xs bg-[#244D3B] text-white px-3 py-1.5 rounded-lg font-bold">🔄 立即刷新</button>
-      </div>
-    </div>
-    <div class="mb-2 flex flex-wrap gap-2 items-center text-xs">
-      <span class="text-stone-600 font-bold">雲端監測 API（選填 Apps Script 網址）：</span>
-      <input id="monGasUrl" type="text" placeholder="貼上 Google Apps Script Web App 網址以跨裝置實時同步..." onchange="localStorage.setItem('ssp_gas_url', this.value.trim())" class="flex-1 min-w-[220px] border border-stone-300 rounded-lg px-2.5 py-1 text-xs" />
-      <span id="monLastSync" class="text-stone-500">尚未刷新</span>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="w-full text-xs border-collapse">
-        <thead>
-          <tr class="bg-[#244D3B] text-white">
-            <th class="p-2 text-left">班別／姓名</th>
-            <th class="p-2 text-left">組別</th>
-            <th class="p-2 text-center">進度</th>
-            <th class="p-2 text-center">總字數</th>
-            <th class="p-2 text-left">狀態預警</th>
-            <th class="p-2 text-left">最後更新</th>
-          </tr>
-        </thead>
-        <tbody id="liveMonitorBody" class="divide-y divide-stone-200"></tbody>
-      </table>
-    </div>
-  </section>
-
 </main></div>
 <div id="teacherPortalWrapper" class="hidden">
   <div class="max-w-6xl mx-auto px-4 mt-4 flex justify-between items-center bg-amber-50 border border-amber-200 rounded-xl p-3">
@@ -667,7 +630,7 @@ function togglePortalRole() {
   const btn = document.getElementById('roleToggleBtn');
   if (btn) btn.textContent = isTeacherRole ? '🎒 返回學生網站' : '👩‍🏫 教師總控網站';
   if (isTeacherRole) {
-    initTeacherPortal();
+    initTeacherPortal(); if(typeof fetchLiveMonitor==="function") fetchLiveMonitor(false);
     if (window.location.hash !== '#teacher') history.replaceState(null, '', '#teacher');
   } else {
     history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -675,7 +638,7 @@ function togglePortalRole() {
   }
 }
 window.addEventListener('DOMContentLoaded', () => {
-  initTeacherPortal();
+  initTeacherPortal(); if(typeof fetchLiveMonitor==="function") fetchLiveMonitor(false);
   if (window.location.hash === '#teacher' || window.location.search.includes('teacher')) {
     togglePortalRole();
   }
