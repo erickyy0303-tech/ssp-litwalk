@@ -30,11 +30,11 @@
 <main class="max-w-4xl mx-auto px-4 mt-5 space-y-5">
 
   <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
-    <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] mb-3">1️⃣ 先選你的「班別」與「組別」，即時查看專屬路線與地圖</h2>
+    <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] mb-3">1️⃣ 先選你的「班別」與「姓名」，即時查看專屬路線與地圖</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <label class="block text-xs font-bold text-stone-600 mb-1">你的班別</label>
-        <select id="stuClass" onchange="updateStudentPortal()" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-[#FAF6EE]">
+        <select id="stuClass" onchange="populateStuNames()" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-[#FAF6EE]">
           <option value="3A">中三 A（3A）｜星期三考察 ➔ 星期四生圖 ➔ 星期五作文＋Story Book</option>
           <option value="3B">中三 B（3B）｜星期三課前預習 ➔ 星期四考察 ➔ 星期五比較生圖＋大綱</option>
           <option value="3C">中三 C（3C）｜星期三考察 ➔ 星期四生圖 ➔ 星期五作文＋Story Book</option>
@@ -42,17 +42,8 @@
         </select>
       </div>
       <div>
-        <label class="block text-xs font-bold text-stone-600 mb-1">你的組別（第 1–8 組）</label>
-        <select id="stuGroup" onchange="updateStudentPortal()" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-[#FAF6EE]">
-          <option value="1">第 1 組（警署後麗安邨荔枝角道起點及終點）</option>
-          <option value="2">第 2 組（警署後麗安邨荔枝角道起點及終點）</option>
-          <option value="3">第 3 組（警署後麗安邨荔枝角道起點及終點）</option>
-          <option value="4">第 4 組（警署後麗安邨荔枝角道起點及終點）</option>
-          <option value="5">第 5 組（警署後麗安邨荔枝角道起點及終點）</option>
-          <option value="6">第 6 組（警署後麗安邨荔枝角道起點及終點）</option>
-          <option value="7">第 7 組（青山道近美荷樓起點）</option>
-          <option value="8">第 8 組（青山道近美荷樓起點）</option>
-        </select>
+        <label class="block text-xs font-bold text-stone-600 mb-1">你的姓名</label>
+        <select id="stuName" onchange="updateStudentPortal()" class="w-full border border-stone-300 rounded-xl px-3 py-2 text-sm bg-[#FAF6EE]"></select>
       </div>
     </div>
     <div id="classScheduleBox" class="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-950"></div>
@@ -65,7 +56,7 @@
         <h3 class="serif text-base font-bold text-[#244D3B] mb-1">📱 程式一：深水埗戶外實地考察程式</h3>
         <p class="text-xs text-stone-600 mb-3">在深水埗街頭散步 2 小時使用：內含五感＋人物、天空、地面、建築觀察、語音朗讀與尋寶拍照／畫板。</p>
       </div>
-      <a href="https://docs.google.com/document/d/1_JpVfjyZiRsih8ygyrUigDJCsHlXMcsHeAS3dPGAwBw/edit" target="_blank" rel="noopener" class="block text-center bg-[#244D3B] hover:bg-emerald-900 text-white text-sm font-bold py-2.5 rounded-xl">打開程式一（戶外考察）</a>
+      <a href="./程式一_深水埗戶外實地考察程式.html" target="_blank" rel="noopener" class="block text-center bg-[#244D3B] hover:bg-emerald-900 text-white text-sm font-bold py-2.5 rounded-xl">打開程式一（戶外考察）</a>
     </div>
     <div class="bg-white rounded-2xl border-2 border-indigo-700 p-4 shadow-sm flex flex-col justify-between">
       <div>
@@ -73,7 +64,7 @@
         <h3 class="serif text-base font-bold text-indigo-900 mb-1">🎨 程式二：課堂預習、AI 生圖及寫作程式</h3>
         <p class="text-xs text-stone-600 mb-3">星期三至五在課室使用：含地景與社會狀況思考、3 個立意＋自由發揮、AI 寫作框架、作文紙 OCR 及 Story Book。</p>
       </div>
-      <a href="https://docs.google.com/document/d/1xNZ2xF24rZ6NSdb_XIfEYhxN9XZ8uFnFMXXAc-kKh1s/edit" target="_blank" rel="noopener" class="block text-center bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-bold py-2.5 rounded-xl">打開程式二（課堂寫作）</a>
+      <a href="./程式二_深水埗課堂預習生圖及寫作程式.html" target="_blank" rel="noopener" class="block text-center bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-bold py-2.5 rounded-xl">打開程式二（課堂寫作）</a>
     </div>
   </section>
 
@@ -129,6 +120,17 @@ const GROUP_CONFIG = {
 };
 
 let sMap = null, sLayerGroup = null;
+
+const STU_ROSTER = [{"c": "3A", "n": "1", "nm": "蔡銘軒", "g": "第4組", "tw": false}, {"c": "3A", "n": "2", "nm": "陳漪軒", "g": "第4組", "tw": false}, {"c": "3A", "n": "3", "nm": "陳銘恩", "g": "第7組", "tw": false}, {"c": "3A", "n": "4", "nm": "陳潁錡", "g": "第7組", "tw": false}, {"c": "3A", "n": "5", "nm": "陳垶穎", "g": "第2組", "tw": false}, {"c": "3A", "n": "6", "nm": "朱汶恩", "g": "第1組", "tw": false}, {"c": "3A", "n": "8", "nm": "高嘉惠", "g": "第1組", "tw": false}, {"c": "3A", "n": "9", "nm": "何振陽", "g": "第2組", "tw": false}, {"c": "3A", "n": "10", "nm": "季劭澤", "g": "第4組", "tw": false}, {"c": "3A", "n": "11", "nm": "郭炫鳴", "g": "第2組", "tw": false}, {"c": "3A", "n": "13", "nm": "李雅誼", "g": "第1組", "tw": false}, {"c": "3A", "n": "14", "nm": "梁樂晴", "g": "第7組", "tw": false}, {"c": "3A", "n": "15", "nm": "梁鼎鈺", "g": "第4組", "tw": false}, {"c": "3A", "n": "16", "nm": "林宇航", "g": "第4組", "tw": false}, {"c": "3A", "n": "18", "nm": "羅怡", "g": "第2組", "tw": false}, {"c": "3A", "n": "19", "nm": "彭芷晴", "g": "第1組", "tw": false}, {"c": "3A", "n": "20", "nm": "鄧啟諾", "g": "第4組", "tw": false}, {"c": "3A", "n": "22", "nm": "湯宜澤", "g": "台灣交流（免考察）", "tw": true}, {"c": "3A", "n": "23", "nm": "曾俊豪", "g": "台灣交流（免考察）", "tw": true}, {"c": "3A", "n": "24", "nm": "黃靖晴", "g": "第7組", "tw": false}, {"c": "3A", "n": "25", "nm": "黃程海", "g": "第4組", "tw": false}, {"c": "3A", "n": "26", "nm": "黃思琪", "g": "第1組", "tw": false}, {"c": "3A", "n": "27", "nm": "徐浚圃", "g": "第2組", "tw": false}, {"c": "3A", "n": "28", "nm": "嚴紫嫣", "g": "第1組", "tw": false}, {"c": "3A", "n": "29", "nm": "楊俊濤", "g": "第2組", "tw": false}, {"c": "3A", "n": "30", "nm": "丘怡琳", "g": "台灣交流（免考察）", "tw": true}, {"c": "3A", "n": "31", "nm": "楊靖雯", "g": "第7組", "tw": false}, {"c": "3A", "n": "32", "nm": "殷蘇琪", "g": "第1組", "tw": false}, {"c": "3A", "n": "33", "nm": "葉蕋綝", "g": "第1組", "tw": false}, {"c": "3A", "n": "34", "nm": "袁振軒", "g": "第4組", "tw": false}, {"c": "3A", "n": "35", "nm": "翁芷心", "g": "台灣交流（免考察）", "tw": true}, {"c": "3A", "n": "36", "nm": "曾柏瑋", "g": "第2組", "tw": false}, {"c": "3A", "n": "37", "nm": "鄭淡元", "g": "第4組", "tw": false}, {"c": "3A", "n": "38", "nm": "敖思源", "g": "第4組", "tw": false}, {"c": "3C", "n": "1", "nm": "蔡楷弘", "g": "第8組", "tw": false}, {"c": "3C", "n": "2", "nm": "陳凱琪", "g": "第8組", "tw": false}, {"c": "3C", "n": "4", "nm": "陳家樂", "g": "第6組", "tw": false}, {"c": "3C", "n": "5", "nm": "陳毓良", "g": "第6組", "tw": false}, {"c": "3C", "n": "6", "nm": "陳昱彤", "g": "第6組", "tw": false}, {"c": "3C", "n": "7", "nm": "張景宇", "g": "第6組", "tw": false}, {"c": "3C", "n": "8", "nm": "張子軒", "g": "第6組", "tw": false}, {"c": "3C", "n": "9", "nm": "莊政", "g": "第5組", "tw": false}, {"c": "3C", "n": "10", "nm": "馮浩程", "g": "第6組", "tw": false}, {"c": "3C", "n": "11", "nm": "巴偉龍", "g": "第8組", "tw": false}, {"c": "3C", "n": "12", "nm": "何欣悅", "g": "第5組", "tw": false}, {"c": "3C", "n": "13", "nm": "賈沛陽", "g": "第8組", "tw": false}, {"c": "3C", "n": "14", "nm": "劉穎晴", "g": "第8組", "tw": false}, {"c": "3C", "n": "15", "nm": "羅健宏", "g": "第8組", "tw": false}, {"c": "3C", "n": "16", "nm": "李沛倫", "g": "第8組", "tw": false}, {"c": "3C", "n": "17", "nm": "盧俊宇", "g": "第5組", "tw": false}, {"c": "3C", "n": "18", "nm": "盧子然", "g": "第3組", "tw": false}, {"c": "3C", "n": "19", "nm": "麥傲宜", "g": "第5組", "tw": false}, {"c": "3C", "n": "20", "nm": "吳多霖", "g": "第3組", "tw": false}, {"c": "3C", "n": "21", "nm": "蕭冠稀", "g": "第3組", "tw": false}, {"c": "3C", "n": "22", "nm": "蘇樂軒", "g": "第3組", "tw": false}, {"c": "3C", "n": "23", "nm": "孫朗僑", "g": "第5組", "tw": false}, {"c": "3C", "n": "24", "nm": "譚永昇", "g": "第3組", "tw": false}, {"c": "3C", "n": "25", "nm": "鄧紫琳", "g": "第5組", "tw": false}, {"c": "3C", "n": "26", "nm": "鄧裕泰", "g": "第3組", "tw": false}, {"c": "3C", "n": "27", "nm": "陳錦華", "g": "第3組", "tw": false}, {"c": "3C", "n": "28", "nm": "黃心橋", "g": "第5組", "tw": false}, {"c": "3C", "n": "29", "nm": "王思皓", "g": "第3組", "tw": false}, {"c": "3C", "n": "30", "nm": "吳欣穎", "g": "第5組", "tw": false}, {"c": "3C", "n": "31", "nm": "楊東明", "g": "第6組", "tw": false}, {"c": "3C", "n": "32", "nm": "陳泳行", "g": "第6組", "tw": false}, {"c": "3B", "n": "1", "nm": "陳栢汝", "g": "第8組", "tw": false}, {"c": "3B", "n": "2", "nm": "陳詩瑜", "g": "第6組", "tw": false}, {"c": "3B", "n": "3", "nm": "陳禹杏", "g": "第7組", "tw": false}, {"c": "3B", "n": "4", "nm": "張紫柔", "g": "第8組", "tw": false}, {"c": "3B", "n": "5", "nm": "鍾柏朗", "g": "第7組", "tw": false}, {"c": "3B", "n": "6", "nm": "方卓翹", "g": "第5組", "tw": false}, {"c": "3B", "n": "7", "nm": "馮駿龍", "g": "第5組", "tw": false}, {"c": "3B", "n": "8", "nm": "賀梓琪", "g": "第7組", "tw": false}, {"c": "3B", "n": "9", "nm": "胡國聰", "g": "第8組", "tw": false}, {"c": "3B", "n": "10", "nm": "莫艾昕", "g": "第5組", "tw": false}, {"c": "3B", "n": "11", "nm": "柯梓峰", "g": "第7組", "tw": false}, {"c": "3B", "n": "12", "nm": "龔嘉俊", "g": "第5組", "tw": false}, {"c": "3B", "n": "13", "nm": "羅天洛", "g": "第5組", "tw": false}, {"c": "3B", "n": "14", "nm": "李君賢", "g": "第7組", "tw": false}, {"c": "3B", "n": "15", "nm": "練曦文", "g": "第6組", "tw": false}, {"c": "3B", "n": "16", "nm": "劉尚君", "g": "第5組", "tw": false}, {"c": "3B", "n": "17", "nm": "劉金山", "g": "第7組", "tw": false}, {"c": "3B", "n": "18", "nm": "羅寶兒", "g": "第8組", "tw": false}, {"c": "3B", "n": "19", "nm": "麥芷瀅", "g": "第6組", "tw": false}, {"c": "3B", "n": "20", "nm": "文昱廷", "g": "第8組", "tw": false}, {"c": "3B", "n": "21", "nm": "吳紫軒", "g": "第5組", "tw": false}, {"c": "3B", "n": "22", "nm": "阮嘉平", "g": "第7組", "tw": false}, {"c": "3B", "n": "23", "nm": "SHAH ZAIN ALI", "g": "第6組", "tw": false}, {"c": "3B", "n": "24", "nm": "冼俊希", "g": "第8組", "tw": false}, {"c": "3B", "n": "25", "nm": "冼曉琳", "g": "第8組", "tw": false}, {"c": "3B", "n": "26", "nm": "蘇梓丰", "g": "第6組", "tw": false}, {"c": "3B", "n": "27", "nm": "戴旨為", "g": "第5組", "tw": false}, {"c": "3B", "n": "28", "nm": "鄧筠蒨", "g": "第8組", "tw": false}, {"c": "3B", "n": "29", "nm": "陳均寶", "g": "第6組", "tw": false}, {"c": "3B", "n": "30", "nm": "黃子晉", "g": "第6組", "tw": false}, {"c": "3B", "n": "31", "nm": "吳炫旺", "g": "第8組", "tw": false}, {"c": "3B", "n": "32", "nm": "楊靖華", "g": "第7組", "tw": false}, {"c": "3B", "n": "33", "nm": "葉向晴", "g": "第6組", "tw": false}, {"c": "3B", "n": "34", "nm": "葉煒樂", "g": "第5組", "tw": false}, {"c": "3B", "n": "35", "nm": "黃詩浠", "g": "第6組", "tw": false}, {"c": "3B", "n": "36", "nm": "陳凱遙", "g": "第7組", "tw": false}, {"c": "3D", "n": "29", "nm": "袁俊希", "g": "第1組", "tw": false}, {"c": "3D", "n": "28", "nm": "邱梓城", "g": "第1組", "tw": false}, {"c": "3D", "n": "14", "nm": "李承恩", "g": "第1組", "tw": false}, {"c": "3D", "n": "24", "nm": "黃英傑", "g": "第1組", "tw": false}, {"c": "3D", "n": "26", "nm": "丘振賢", "g": "第1組", "tw": false}, {"c": "3D", "n": "21", "nm": "汪龍騰", "g": "第1組", "tw": false}, {"c": "3D", "n": "10", "nm": "匡子洲", "g": "第1組", "tw": false}, {"c": "3D", "n": "8", "nm": "洪子晉", "g": "第1組", "tw": false}, {"c": "3D", "n": "5", "nm": "池鴻斌", "g": "第2組", "tw": false}, {"c": "3D", "n": "11", "nm": "林俊燁", "g": "第2組", "tw": false}, {"c": "3D", "n": "12", "nm": "林軒宇", "g": "第2組", "tw": false}, {"c": "3D", "n": "23", "nm": "黃梓龍", "g": "第2組", "tw": false}, {"c": "3D", "n": "15", "nm": "盧俊熹", "g": "第2組", "tw": false}, {"c": "3D", "n": "17", "nm": "彭子灃", "g": "第2組", "tw": false}, {"c": "3D", "n": "22", "nm": "王子朗", "g": "第2組", "tw": false}, {"c": "3D", "n": "7", "nm": "洪暢", "g": "第3組", "tw": false}, {"c": "3D", "n": "20", "nm": "温梓桐", "g": "第3組", "tw": false}, {"c": "3D", "n": "16", "nm": "羅詩妍", "g": "第3組", "tw": false}, {"c": "3D", "n": "27", "nm": "丘藹蕎", "g": "第3組", "tw": false}, {"c": "3D", "n": "13", "nm": "梁芯諾", "g": "第3組", "tw": false}, {"c": "3D", "n": "2", "nm": "陳泳雯", "g": "第3組", "tw": false}, {"c": "3D", "n": "25", "nm": "楊芷瑜", "g": "第3組", "tw": false}, {"c": "3D", "n": "4", "nm": "張童心", "g": "第4組", "tw": false}, {"c": "3D", "n": "19", "nm": "曾俊銘", "g": "第4組", "tw": false}, {"c": "3D", "n": "3", "nm": "鄭天凱", "g": "第4組", "tw": false}, {"c": "3D", "n": "9", "nm": "甘宇豐", "g": "第4組", "tw": false}, {"c": "3D", "n": "18", "nm": "冼梓樂", "g": "第4組", "tw": false}, {"c": "3D", "n": "1", "nm": "陳偉龍", "g": "第4組", "tw": false}, {"c": "3D", "n": "6", "nm": "周家俊", "g": "第4組", "tw": false}];
+function populateStuNames() {
+  const cls = document.getElementById('stuClass').value;
+  const sel = document.getElementById('stuName');
+  if (!sel) return;
+  const list = STU_ROSTER.filter(s => s.c === cls).sort((a,b) => Number(a.n) - Number(b.n));
+  sel.innerHTML = list.map(s => `<option value="${s.n}" data-group="${s.g}" data-tw="${s.tw}">${s.nm}（${s.n}號）</option>`).join('');
+  populateStuNames();
+}
+
 function updateStudentPortal() {
   const cls = document.getElementById('stuClass').value;
   const grp = document.getElementById('stuGroup').value;

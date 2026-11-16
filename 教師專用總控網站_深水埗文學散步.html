@@ -215,6 +215,42 @@
       </table>
     </div>
   </section>
+
+  <section class="bg-white rounded-2xl border-2 border-[#244D3B] p-5 shadow-sm mt-5" id="liveMonitorSection">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div>
+        <h2 class="serif text-base sm:text-lg font-bold text-[#244D3B] m-0">📡 實時監測各站完成進度（每 10 秒自動更新）</h2>
+        <p class="text-xs text-stone-500 m-0">即時顯示每位學生已完成站數、總作答字數及異常預警（字數少於 15 字或尚未動筆將標示提醒）。</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="monClassFilter" onchange="renderLiveMonitor()" class="border border-stone-300 rounded-lg px-2 py-1 text-xs bg-[#FAF6EE]">
+          <option value="ALL">全部班別</option><option value="3A">3A</option><option value="3B">3B</option><option value="3C">3C</option><option value="3D">3D</option>
+        </select>
+        <button type="button" onclick="fetchLiveMonitor(true)" class="text-xs bg-[#244D3B] text-white px-3 py-1.5 rounded-lg font-bold">🔄 立即刷新</button>
+      </div>
+    </div>
+    <div class="mb-2 flex flex-wrap gap-2 items-center text-xs">
+      <span class="text-stone-600 font-bold">雲端監測 API（選填 Apps Script 網址）：</span>
+      <input id="monGasUrl" type="text" placeholder="貼上 Google Apps Script Web App 網址以跨裝置實時同步..." onchange="localStorage.setItem('ssp_gas_url', this.value.trim())" class="flex-1 min-w-[220px] border border-stone-300 rounded-lg px-2.5 py-1 text-xs" />
+      <span id="monLastSync" class="text-stone-500">尚未刷新</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-xs border-collapse">
+        <thead>
+          <tr class="bg-[#244D3B] text-white">
+            <th class="p-2 text-left">班別／姓名</th>
+            <th class="p-2 text-left">組別</th>
+            <th class="p-2 text-center">進度</th>
+            <th class="p-2 text-center">總字數</th>
+            <th class="p-2 text-left">狀態預警</th>
+            <th class="p-2 text-left">最後更新</th>
+          </tr>
+        </thead>
+        <tbody id="liveMonitorBody" class="divide-y divide-stone-200"></tbody>
+      </table>
+    </div>
+  </section>
+
 </main>
 
 <div id="pwdModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -412,6 +448,67 @@ window.onload = function() {
     <a href="${d.url}" target="_blank" rel="noopener" class="bg-white border border-stone-200 hover:border-emerald-700 rounded-lg px-3 py-2 text-emerald-800 font-medium underline">📄 ${d.g}</a>
   `).join('');
 };
+</script>
+<script>
+
+let cloudMonitorCache = {};
+async function fetchLiveMonitor(manual = false) {
+  const gas = localStorage.getItem('ssp_gas_url') || document.getElementById('monGasUrl')?.value.trim() || '';
+  if (gas) {
+    try {
+      const sep = gas.includes('?') ? '&' : '?';
+      const res = await fetch(`${gas}${sep}action=getProgress&t=${Date.now()}`);
+      const data = await res.json();
+      if (data && data.students) cloudMonitorCache = data.students;
+    } catch (e) {}
+  }
+  const el = document.getElementById('monLastSync');
+  if (el) el.textContent = `最後更新：${new Date().toLocaleTimeString()}${manual ? '（手動刷新）' : ''}`;
+  renderLiveMonitor();
+}
+
+function renderLiveMonitor() {
+  const body = document.getElementById('liveMonitorBody');
+  if (!body) return;
+  const clsFilter = document.getElementById('monClassFilter')?.value || 'ALL';
+  let localMon = {};
+  try { localMon = JSON.parse(localStorage.getItem('ssp_live_monitor_v1') || '{}'); } catch (e) {}
+  const merged = Object.assign({}, localMon, cloudMonitorCache);
+  const list = (typeof adminStudents !== 'undefined' ? adminStudents : []).filter(s => !s.taiwan && (clsFilter === 'ALL' || s.class === clsFilter));
+  body.innerHTML = list.map(s => {
+    const key = `${s.class}_${s.number}`;
+    const rec = merged[key];
+    const done = rec ? rec.doneCount : 0;
+    const total = rec ? rec.totalStations : 8;
+    const chars = rec ? rec.totalChars : 0;
+    const pct = Math.round((done / total) * 100);
+    let badge = '<span class="px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">⚪ 未開始</span>';
+    if (done > 0 && chars < done * 15) {
+      badge = '<span class="px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-bold">⚠️ 疑似敷衍（每站平均少於15字）</span>';
+    } else if (done === total) {
+      badge = '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">🟢 已完成全部</span>';
+    } else if (done > 0) {
+      badge = '<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">🟡 考察進行中</span>';
+    }
+    const upd = rec?.updatedAt ? new Date(rec.updatedAt).toLocaleTimeString() : '—';
+    return `<tr>
+      <td class="p-2 font-bold">${s.class}(${s.number}) ${s.name}</td>
+      <td class="p-2">${s.groupId}</td>
+      <td class="p-2 text-center font-bold">${done}/${total} (${pct}%)</td>
+      <td class="p-2 text-center">${chars} 字</td>
+      <td class="p-2">${badge}</td>
+      <td class="p-2 text-stone-500">${upd}</td>
+    </tr>`;
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('monGasUrl');
+  if (inp) inp.value = localStorage.getItem('ssp_gas_url') || '';
+  fetchLiveMonitor(false);
+  setInterval(() => fetchLiveMonitor(false), 10000);
+});
+
 </script>
 </body>
 </html>
