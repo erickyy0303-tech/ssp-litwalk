@@ -599,7 +599,7 @@ const RHETORIC_TIPS = {
 
 let state = {
   profile: null,
-  gasUrl: '',
+  gasUrl: 'https://script.google.com/macros/s/AKfycbwdwBasLBE5pppK476JhvpFNcxif0n4jrR4vpHAedLvKAe7RaSjTfo_dKerEvGcMImC/exec',
   poeKey: 'sk-poe-HURfOyWVcsmDnjmC_hxhmQ8n6Dk4j1fm1a8XOK8LrY4',
   poeModel: 'GPT-4o-Mini',
   fontLarge: false,
@@ -664,7 +664,7 @@ function init() {
       if (!state.poeKey) state.poeKey = 'sk-poe-HURfOyWVcsmDnjmC_hxhmQ8n6Dk4j1fm1a8XOK8LrY4';
     } catch(e) {}
   }
-  document.getElementById('inGasUrl').value = state.gasUrl || '';
+  document.getElementById('inGasUrl').value = state.gasUrl || 'https://script.google.com/macros/s/AKfycbwdwBasLBE5pppK476JhvpFNcxif0n4jrR4vpHAedLvKAe7RaSjTfo_dKerEvGcMImC/exec';
   document.getElementById('inPoeKey').value = state.poeKey || '';
   populateStudentNumbers();
   if (state.profile) renderApp();

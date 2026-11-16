@@ -446,7 +446,7 @@ const MODE_NAMES = {
 
 let state = {
   profile: null,
-  gasUrl: '',
+  gasUrl: 'https://script.google.com/macros/s/AKfycbwdwBasLBE5pppK476JhvpFNcxif0n4jrR4vpHAedLvKAe7RaSjTfo_dKerEvGcMImC/exec',
   poeKey: 'sk-poe-HURfOyWVcsmDnjmC_hxhmQ8n6Dk4j1fm1a8XOK8LrY4',
   poeModel: 'GPT-4o-Mini',
   currentStationId: null,
@@ -950,7 +950,7 @@ function init() {
       if (!state.poeKey) state.poeKey = 'sk-poe-HURfOyWVcsmDnjmC_hxhmQ8n6Dk4j1fm1a8XOK8LrY4';
     } catch(e) {}
   }
-  document.getElementById('inGasUrl').value = state.gasUrl || '';
+  document.getElementById('inGasUrl').value = state.gasUrl || 'https://script.google.com/macros/s/AKfycbwdwBasLBE5pppK476JhvpFNcxif0n4jrR4vpHAedLvKAe7RaSjTfo_dKerEvGcMImC/exec';
   document.getElementById('inPoeKey').value = state.poeKey || '';
   document.getElementById('inPoeModel').value = state.poeModel || 'GPT-4o-Mini';
   populateStudentNumbers();
@@ -1651,7 +1651,7 @@ async function autoSyncStationToCloud(sid) {
     await fetch(state.gasUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'station_update', stationId: sid, profile: state.profile, records: state.records, timestamp: new Date().toISOString() })
+      body: JSON.stringify({ action: 'station_update', appMode: 'app1_outdoor', stationId: sid, className: state.profile.class, classNo: state.profile.number, studentName: state.profile.name, groupId: (state.profile.groupId||'').replace(/[^0-9]/g,''), difficultyTier: state.profile.mode, stationAnswers: state.records, profile: state.profile, records: state.records, timestamp: new Date().toISOString() })
     });
   } catch (e) {}
 }

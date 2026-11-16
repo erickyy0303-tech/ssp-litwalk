@@ -453,7 +453,8 @@ window.onload = function() {
 
 let cloudMonitorCache = {};
 async function fetchLiveMonitor(manual = false) {
-  const gas = localStorage.getItem('ssp_gas_url') || document.getElementById('monGasUrl')?.value.trim() || '';
+  const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwdwBasLBE5pppK476JhvpFNcxif0n4jrR4vpHAedLvKAe7RaSjTfo_dKerEvGcMImC/exec';
+  const gas = localStorage.getItem('ssp_gas_url') || document.getElementById('monGasUrl')?.value.trim() || DEFAULT_GAS_URL;
   if (gas) {
     try {
       const sep = gas.includes('?') ? '&' : '?';
@@ -504,7 +505,7 @@ function renderLiveMonitor() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const inp = document.getElementById('monGasUrl');
-  if (inp) inp.value = localStorage.getItem('ssp_gas_url') || '';
+  if (inp) inp.value = localStorage.getItem('ssp_gas_url') || 'https://script.google.com/macros/s/AKfycbwdwBasLBE5pppK476JhvpFNcxif0n4jrR4vpHAedLvKAe7RaSjTfo_dKerEvGcMImC/exec';
   fetchLiveMonitor(false);
   setInterval(() => fetchLiveMonitor(false), 10000);
 });
