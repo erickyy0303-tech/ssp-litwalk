@@ -1540,7 +1540,16 @@ function renderStation() {
     </div>
 
     <div id="methodPhotoBox" class="${rec.treasureMethod==='拍照上載'?'':'hidden'}" style="margin-top:6px;">
-      <input type="file" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload('${sid}', this)" />
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+        <label style="display:inline-flex;align-items:center;gap:4px;background:#244D3B;color:#fff;padding:7px 12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">
+          🖼️ 從手機相簿選取（可多選）
+          <input type="file" accept="image/*" multiple onchange="handlePhotoUpload('${sid}', this)" style="display:none;" />
+        </label>
+        <label style="display:inline-flex;align-items:center;gap:4px;background:#1B365D;color:#fff;padding:7px 12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">
+          📷 現場即時拍照
+          <input type="file" accept="image/*" capture="environment" multiple onchange="handlePhotoUpload('${sid}', this)" style="display:none;" />
+        </label>
+      </div>
     </div>
 
     <div id="methodSketchBox" class="sketch-wrap ${rec.treasureMethod==='手機畫板速寫'?'':'hidden'}">
