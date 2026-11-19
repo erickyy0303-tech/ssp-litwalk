@@ -224,7 +224,7 @@
         • <strong>難度三（基礎：選擇題＋供詞組句）</strong>：最容易上手！每站設有 2 題選擇題及點選詞語卡自動組句，適合需要較多支援的同學。<br>
         • <strong>難度二（進階：引文填充＋短答）</strong>：提供句式框架與半開放填充，引導學生結合五感與課文關鍵詞作答。<br>
         • <strong>難度一（挑戰：文本深究＋雙城對比短文）</strong>：開放式深度問答，要求引用課文原句並與〈天湖路〉作雙城比較。<br>
-        • <strong>🤖 Poe AI 智慧提示助教</strong>：已整合 Poe API，按每位學生的所選難度即時給予個別化觀察提示與組句建議！
+        • <strong>🤖 Gemini AI 智慧提示助教</strong>：已整合 Poe API，按每位學生的所選難度即時給予個別化觀察提示與組句建議！
       </div>
 
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-top:12px;">
@@ -257,16 +257,12 @@
 
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:12px;">
         <div>
-          <label>Poe API 金鑰（已預載，用於即時生成學生分層提示）</label>
-          <input id="inPoeKey" type="text" oninput="savePoeKey(this.value)" />
+          <label>Google Gemini API 金鑰（可於網址 ?gemini_key= 自動帶入）</label>
+          <input id="inGeminiKey" type="password" placeholder="請貼上 Gemini API Key（AIza...）" oninput="saveGeminiKey(this.value)" />
         </div>
         <div>
-          <label>Poe 模型名稱（預設 GPT-4o-Mini，快速且省點數）</label>
-          <select id="inPoeModel" onchange="savePoeModel(this.value)">
-            <option value="GPT-4o-Mini">GPT-4o-Mini（推薦：回應極快、最省點數）</option>
-            <option value="Claude-3.5-Haiku">Claude-3.5-Haiku（文字自然）</option>
-            <option value="Gemini-2.0-Flash">Gemini-2.0-Flash（透過 Poe 呼叫）</option>
-          </select>
+          <label>Gemini 模型（預設 gemini-2.5-flash，快速穩定）</label>
+          <select id="inGeminiModel" onchange="saveGeminiModel(this.value)"><option value="gemini-2.5-flash">gemini-2.5-flash（預設・快速穩定）</option><option value="gemini-2.5-pro">gemini-2.5-pro（深度寫作指導）</option></select>
         </div>
         <div>
           <label>雲端硬碟 Apps Script 同步網址（選填）</label>
@@ -447,8 +443,8 @@ const MODE_NAMES = {
 let state = {
   profile: null,
   gasUrl: 'https://script.google.com/macros/s/AKfycbwdwBasLBE5pppK476JhvpFNcxif0n4jrR4vpHAedLvKAe7RaSjTfo_dKerEvGcMImC/exec',
-  poeKey: 'sk-poe-HURfOyWVcsmDnjmC_hxhmQ8n6Dk4j1fm1a8XOK8LrY4',
-  poeModel: 'GPT-4o-Mini',
+  geminiKey: '',
+  geminiModel: 'gemini-2.5-flash',
   currentStationId: null,
   fontLarge: false,
   roster: JSON.parse(JSON.stringify(DEFAULT_ROSTER)),
@@ -544,7 +540,7 @@ function renderCitySensePre() {
   const fbEl = document.getElementById('cityMatrixFeedback');
   if (state.citySense.feedback) {
     fbEl.classList.remove('hidden');
-    fbEl.innerHTML = `<strong>🤖 Poe 助教雙城觀察回饋：</strong><br>${nlToBr(state.citySense.feedback)}`;
+    fbEl.innerHTML = `<strong>🤖 Gemini AI 助教雙城觀察回饋：</strong><br>${nlToBr(state.citySense.feedback)}`;
   }
 }
 
@@ -567,28 +563,16 @@ async function evaluateCityMatrixWithPoe() {
   const m = state.citySense.matrix;
   const fbEl = document.getElementById('cityMatrixFeedback');
   fbEl.classList.remove('hidden');
-  fbEl.innerHTML = '🤖 Poe 助教正在分析你的雙城六格比較，請稍候...';
+  fbEl.innerHTML = '🤖 Gemini AI 助教正在分析你的雙城六格比較，請稍候...';
 
   const summary = `天水圍視覺：${m.tsw_vis||'未填'}｜深水埗視覺：${m.ssp_vis||'未填'}｜天水圍聽覺：${m.tsw_aud||'未填'}｜深水埗聽覺：${m.ssp_aud||'未填'}｜天水圍人際：${m.tsw_rel||'未填'}｜深水埗人際：${m.ssp_rel||'未填'}`;
   try {
-    const res = await fetch('https://api.poe.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${state.poeKey}` },
-      body: JSON.stringify({
-        model: state.poeModel || 'GPT-4o-Mini',
-        messages: [
-          { role: 'system', content: '你是香港中三中文科助教。請根據學生的天水圍與深水埗六格比較，用繁體中文給出100字內的具體亮點肯定、一條追問及一個可用於實地散步的觀察建議。' },
-          { role: 'user', content: summary }
-        ],
-        temperature: 0.6, max_tokens: 220
-      })
-    });
-    const data = await res.json();
-    const reply = data?.choices?.[0]?.message?.content;
+    const gemRes = await callGeminiAPI(summary, '你是香港中三中文科助教。請根據學生的天水圍與深水埗六格比較，用繁體中文給出100字內的具體亮點肯定、一條追問及一個可用於實地散步的觀察建議。', 220);
+    const reply = gemRes.text;
     if (reply) {
       state.citySense.feedback = reply.trim();
       saveLocal();
-      fbEl.innerHTML = `<strong>🤖 Poe 助教雙城觀察回饋：</strong><br>${nlToBr(state.citySense.feedback)}
+      fbEl.innerHTML = `<strong>🤖 Gemini AI 助教雙城觀察回饋：</strong><br>${nlToBr(state.citySense.feedback)}
         <button class="btn-tts" onclick="speakText('${cleanForSpeech(state.citySense.feedback)}')">🔊 朗讀</button>
         <button class="btn-tts-stop" onclick="stopSpeech()">⏹️ 停止</button>`;
       return;
@@ -895,26 +879,14 @@ async function polishPostWithPoe(sid) {
   const rhetorics = detectRhetoricTypes(txt);
   const outEl = document.getElementById('postPoeResult');
   outEl.classList.remove('hidden');
-  outEl.innerHTML = '🤖 Poe 助教正在幫你潤飾修辭...';
+  outEl.innerHTML = '🤖 Gemini AI 助教正在幫你潤飾修辭...';
 
   const prompt = `學生在「${st.name}」寫了：「${txt || rec.writing || '未填'}」。請用繁體中文在90字內給他一句結合「${rInfo.r.split('：')[0]}」的具體擴寫示範句，讓他可直接參考加入段落中。`;
   try {
-    const res = await fetch('https://api.poe.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${state.poeKey}` },
-      body: JSON.stringify({
-        model: state.poeModel || 'GPT-4o-Mini',
-        messages: [
-          { role: 'system', content: '你是親切的香港中三中文老師。' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.6, max_tokens: 180
-      })
-    });
-    const data = await res.json();
-    const reply = data?.choices?.[0]?.message?.content;
+    const gemRes = await callGeminiAPI(prompt, '你是親切的香港中三中文老師。', 180);
+    const reply = gemRes.text;
     if (reply) {
-      rec.postAiFeedback = `<strong>🤖 Poe 修辭潤飾建議：</strong><br>${nlToBr(reply.trim())}
+      rec.postAiFeedback = `<strong>🤖 Gemini AI 修辭潤飾建議：</strong><br>${nlToBr(reply.trim())}
         <div style="margin-top:6px;">
           <button class="btn-tts" onclick="speakText('${cleanForSpeech(reply)}')">🔊 朗讀建議</button>
           <button class="btn-tts-stop" onclick="stopSpeech()">⏹️ 停止</button>
@@ -947,14 +919,70 @@ function init() {
       const parsed = JSON.parse(saved);
       state = Object.assign(state, parsed);
       if (!state.roster || !state.roster['3A']) state.roster = JSON.parse(JSON.stringify(DEFAULT_ROSTER));
-      if (!state.poeKey) state.poeKey = 'sk-poe-HURfOyWVcsmDnjmC_hxhmQ8n6Dk4j1fm1a8XOK8LrY4';
+      
     } catch(e) {}
   }
   document.getElementById('inGasUrl').value = state.gasUrl || 'https://script.google.com/macros/s/AKfycbwdwBasLBE5pppK476JhvpFNcxif0n4jrR4vpHAedLvKAe7RaSjTfo_dKerEvGcMImC/exec';
-  document.getElementById('inPoeKey').value = state.poeKey || '';
-  document.getElementById('inPoeModel').value = state.poeModel || 'GPT-4o-Mini';
+  
+  try {
+    const uParams = new URLSearchParams(window.location.search);
+    const urlGemKey = uParams.get('gemini_key') || new URLSearchParams((window.location.hash || '').replace(/^#/, '')).get('gemini_key');
+    if (urlGemKey && urlGemKey.trim()) {
+      state.geminiKey = urlGemKey.trim();
+      saveLocal();
+    }
+  } catch (e) {}
+
+  document.getElementById('inGeminiKey').value = state.geminiKey || '';
+  document.getElementById('inGeminiModel').value = state.geminiModel || 'gemini-2.5-flash';
   populateStudentNumbers();
   if (state.profile) renderApp();
+}
+
+async function callGeminiAPI(promptOrParts, sysPrompt = '', maxTokens = 800) {
+  const key = (state.geminiKey || '').trim();
+  if (!key) {
+    return { text: null, error: '尚未設定 Gemini API Key，請先於上方設定欄輸入或透過網址 ?gemini_key= 載入。' };
+  }
+  const model = (state.geminiModel || 'gemini-2.5-flash').trim();
+  let parts = [];
+  if (typeof promptOrParts === 'string') {
+    parts = [{ text: promptOrParts }];
+  } else if (Array.isArray(promptOrParts)) {
+    for (const item of promptOrParts) {
+      if (item.type === 'text') {
+        parts.push({ text: item.text });
+      } else if (item.type === 'image_url' && item.image_url?.url) {
+        const m = item.image_url.url.match(/^data:([^;]+);base64,(.+)$/);
+        if (m) {
+          parts.push({ inline_data: { mime_type: m[1], data: m[2] } });
+        }
+      }
+    }
+  }
+  const payload = {
+    contents: [{ role: 'user', parts }],
+    generationConfig: { temperature: 0.65, maxOutputTokens: maxTokens }
+  };
+  if (sysPrompt) {
+    payload.systemInstruction = { parts: [{ text: sysPrompt }] };
+  }
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (!resp.ok || data?.error) {
+      return { text: null, error: data?.error?.message || `HTTP ${resp.status}` };
+    }
+    const text = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
+    return { text: text || null, error: text ? null : 'Empty response' };
+  } catch (e) {
+    return { text: null, error: e.message || 'Network error' };
+  }
 }
 
 function saveLocal() {
@@ -963,8 +991,8 @@ function saveLocal() {
 }
 
 function saveGasUrl(val) { state.gasUrl = val.trim(); saveLocal(); }
-function savePoeKey(val) { state.poeKey = val.trim(); saveLocal(); }
-function savePoeModel(val) { state.poeModel = val; saveLocal(); }
+function saveGeminiKey(val) { state.geminiKey = val.trim(); saveLocal(); }
+function saveGeminiModel(val) { state.geminiModel = val; saveLocal(); }
 
 function speakText(txt) {
   if (!('speechSynthesis' in window)) { showToast('此裝置不支援語音朗讀功能。'); return; }
@@ -1345,7 +1373,7 @@ async function askPoeHelper(sid, taskType) {
     showToast('請先輸入至少 15 字觀察筆記');
     return;
   }
-  outEl.innerHTML = '🤖 Poe 助教正在為你整理觀察提示，請稍候...';
+  outEl.innerHTML = '🤖 Gemini AI 助教正在為你整理觀察提示，請稍候...';
   const modeDesc = MODE_NAMES[p.mode || 3];
   const userDraft = [rec.writing, rec.deep1, rec.deep2].filter(Boolean).join('；') || '（學生尚未動筆）';
   const selectedWords = (rec.selectedChips || []).join('、') || '（未選詞語）';
@@ -1356,28 +1384,12 @@ async function askPoeHelper(sid, taskType) {
     : `學生已選詞語：${selectedWords}；目前草稿：${userDraft}。請按「${modeDesc}」程度，給他一個溫馨鼓勵及 1 句具體的組句／擴寫建議（不要直接代寫全文）。`;
 
   try {
-    const res = await fetch('https://api.poe.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${state.poeKey}`
-      },
-      body: JSON.stringify({
-        model: state.poeModel || 'GPT-4o-Mini',
-        messages: [
-          { role: 'system', content: sysPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.6,
-        max_tokens: 220
-      })
-    });
-    const data = await res.json();
-    const reply = data?.choices?.[0]?.message?.content;
+    const gemRes = await callGeminiAPI(userPrompt, sysPrompt, 220);
+    const reply = gemRes.text;
     if (reply) {
       rec.poeHint = reply.trim();
       saveLocal();
-      outEl.innerHTML = `<strong>🤖 Poe 助教提示：</strong><br>${nlToBr(rec.poeHint)}
+      outEl.innerHTML = `<strong>🤖 Gemini AI 助教提示：</strong><br>${nlToBr(rec.poeHint)}
         <button class="btn-tts" onclick="speakText('${cleanForSpeech(rec.poeHint)}')">🔊 朗讀</button>
         <button class="btn-tts-stop" onclick="stopSpeech()">⏹️ 停止</button>`;
       return;
@@ -1576,7 +1588,7 @@ function renderStation() {
 
     <div class="poe-box">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-        <strong>🤖 需要靈感？按右邊讓 Poe 助教幫你：</strong>
+        <strong>🤖 需要靈感？按右邊讓 Gemini AI 助教幫你：</strong>
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
           <button type="button" class="btn-tts" onclick="askPoeHelper('${sid}', 'hint')">✨ 給我提示詞</button>
           <button type="button" class="btn-tts" onclick="askPoeHelper('${sid}', 'polish')">📝 幫我組句</button>
